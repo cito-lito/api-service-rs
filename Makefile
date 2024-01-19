@@ -1,5 +1,9 @@
 	
-.PHONY: add_migration, run, up
+.PHONY: setup, add_migration, run, up
+
+setup:	
+	cargo install cargo-watch
+	cargo install sqlx-cli 
 
 up:
 	docker-compose up -d

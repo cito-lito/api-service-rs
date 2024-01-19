@@ -23,6 +23,9 @@ sqlx = { version = "0.7.0", features = [
 # Data serialization library
 serde = { version = "1.0.144", features = ["derive"] }
 
+# Data validation library
+validator = { version = "0.16", features = ["derive"] }
+
 # Other utils
 chrono = { version = "0.4.22", features = ["serde"] }
 uuid = { version = "1.6.1", features = ["v4", "fast-rng", "serde"] }
