@@ -1,4 +1,4 @@
-use actix_web::{get, web, App, HttpResponse, HttpServer, Responder};
+use actix_web::{get, web, App, HttpResponse, HttpServer, Responder, middleware::Logger};
 
 use sqlx::postgres::PgPool;
 
@@ -7,7 +7,6 @@ use crate::controllers::create_trainer::create_trainer;
 pub struct AppState {
     pub db: PgPool,
 }
-
 
 #[get("/")]
 async fn index() -> impl Responder {
@@ -35,6 +34,7 @@ impl Server {
 
         HttpServer::new(move || {
             App::new()
+                .wrap(Logger::default())
                 .app_data(web::Data::new(AppState { db: pool.clone() }))
                 .service(index)
                 .service(create_trainer)

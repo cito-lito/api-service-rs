@@ -1,4 +1,4 @@
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 use validator::Validate;
 
@@ -10,8 +10,8 @@ pub struct TrainerDto {
     #[validate(range(min = 1, max = 50))]
     pub level: u8,
 }
- 
-#[derive(Serialize, Deserialize, Debug, Clone)]
+
+#[derive(Serialize, Deserialize, Debug)]
 pub struct Trainer {
     pub id: Uuid,
     pub name: String,

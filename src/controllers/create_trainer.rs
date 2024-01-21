@@ -1,8 +1,9 @@
 use actix_web::{post, web, HttpResponse, Responder};
 use sqlx::postgres::PgPool;
+use validator::Validate;
 
-use crate::server::AppState;
 use crate::models::trainer::{Trainer, TrainerDto};
+use crate::server::AppState;
 
 #[post("/trainer")]
 pub async fn create_trainer(
@@ -11,7 +12,11 @@ pub async fn create_trainer(
 ) -> impl Responder {
     let trainer_dto = trainer.into_inner();
 
-    // postgres smallint is i16, save cast u8 to i16
+    if let Err(e) = trainer_dto.validate() {
+        return HttpResponse::BadRequest().body(format!("Bad Request: {}", e));
+    }
+
+    // postgres smallint is i16, safe cast u8 to i16
     let trainer = Trainer::new(trainer_dto.name, trainer_dto.level as i16);
 
     let query_result = save_trainer(&app_state.db, &trainer).await;
