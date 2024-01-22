@@ -13,7 +13,7 @@ pub async fn create_trainer(
     let trainer_dto = trainer.into_inner();
 
     if let Err(e) = trainer_dto.validate() {
-        return HttpResponse::BadRequest().body(format!("Bad Request: {}", e));
+        return HttpResponse::BadRequest().body(format!("message: Bad Request: {}", e));
     }
 
     // postgres smallint is i16, safe cast u8 to i16
@@ -30,15 +30,16 @@ pub async fn create_trainer(
             if let Some(db_error) = e.as_database_error() {
                 if let Some(constraint) = db_error.constraint() {
                     if constraint == "trainers_name_key" {
-                        return HttpResponse::BadRequest().body("Trainer name already exists");
+                        return HttpResponse::BadRequest().body("message: Trainer name already exists");
                     }
                 }
             }
-            HttpResponse::InternalServerError().body("Internal Server Error")
+            HttpResponse::InternalServerError().body("message: Internal Server Error")
         }
     }
 }
 
+// maybe move to a service ?
 async fn save_trainer(pool: &PgPool, trainer: &Trainer) -> Result<Trainer, sqlx::Error> {
     let result = sqlx::query_as!(
         Trainer, "insert into trainers (id, name, level, created_at, updated_at) values ($1, $2, $3, $4, $5) returning id, name, level, created_at, updated_at",

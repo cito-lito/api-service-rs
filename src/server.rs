@@ -1,16 +1,12 @@
-use actix_web::{get, web, App, HttpResponse, HttpServer, Responder, middleware::Logger};
+use actix_cors::Cors;
+use actix_web::{middleware::{Logger, Compress}, web, App, HttpServer, Responder, get, HttpResponse};
 
 use sqlx::postgres::PgPool;
 
-use crate::controllers::create_trainer::create_trainer;
+use crate::routes::config_routes;
 
 pub struct AppState {
     pub db: PgPool,
-}
-
-#[get("/")]
-async fn index() -> impl Responder {
-    HttpResponse::Ok().body("Hello world!")
 }
 
 pub struct Server {
@@ -23,7 +19,7 @@ impl Server {
         Self { host, port }
     }
     pub async fn run(&self) -> std::io::Result<()> {
-        println!("Starting server at http://{}:{}", self.host, self.port);
+        log::info!("Starting server at http://{}:{}", self.host, self.port);
 
         let pool = PgPool::connect(
             &std::env::var("DATABASE_URL")
@@ -35,12 +31,19 @@ impl Server {
         HttpServer::new(move || {
             App::new()
                 .wrap(Logger::default())
+                .wrap(Cors::default())
+                .wrap(Compress::default())
                 .app_data(web::Data::new(AppState { db: pool.clone() }))
-                .service(index)
-                .service(create_trainer)
+                .service(health_check)
+                .configure(config_routes)
         })
         .bind(format!("{}:{}", self.host, self.port))?
         .run()
         .await
     }
+}
+
+#[get("/health")]
+async fn health_check() -> impl Responder {
+    HttpResponse::Ok().json("Healthy")
 }
