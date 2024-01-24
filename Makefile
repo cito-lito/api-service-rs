@@ -1,5 +1,5 @@
 	
-.PHONY: setup, add_migration, run, up
+.PHONY: setup, add_migration, run, up, clippy, fmt
 
 setup:	
 	cargo install cargo-watch
@@ -8,7 +8,16 @@ setup:
 up:
 	docker-compose up -d
 
-run: 
+clippy: 
+	cargo clippy -- -D warnings
+
+fmt:
+	cargo fmt	
+
+check: fmt clippy
+
+
+run: check
 	cargo watch -x run
 
 add_migration:

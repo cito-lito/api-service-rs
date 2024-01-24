@@ -10,6 +10,7 @@ edition = "2021"
 # Web framework
 actix-web = "4"
 actix-cors = "0.7.0"
+actix-rt = "2.9.0"
 
 #Postgres access library
 sqlx = { version = "0.7.0", features = [

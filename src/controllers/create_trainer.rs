@@ -30,7 +30,8 @@ pub async fn create_trainer(
             if let Some(db_error) = e.as_database_error() {
                 if let Some(constraint) = db_error.constraint() {
                     if constraint == "trainers_name_key" {
-                        return HttpResponse::BadRequest().body("message: Trainer name already exists");
+                        return HttpResponse::BadRequest()
+                            .body("message: Trainer name already exists");
                     }
                 }
             }

@@ -1,5 +1,8 @@
 use actix_cors::Cors;
-use actix_web::{middleware::{Logger, Compress}, web, App, HttpServer, Responder, get, HttpResponse};
+use actix_web::{
+    middleware::{Compress, Logger},
+    web, App, HttpServer,
+};
 
 use sqlx::postgres::PgPool;
 
@@ -34,16 +37,10 @@ impl Server {
                 .wrap(Cors::default())
                 .wrap(Compress::default())
                 .app_data(web::Data::new(AppState { db: pool.clone() }))
-                .service(health_check)
                 .configure(config_routes)
         })
         .bind(format!("{}:{}", self.host, self.port))?
         .run()
         .await
     }
-}
-
-#[get("/health")]
-async fn health_check() -> impl Responder {
-    HttpResponse::Ok().json("Healthy")
 }
