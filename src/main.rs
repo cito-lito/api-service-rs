@@ -18,7 +18,7 @@ async fn main() -> std::io::Result<()> {
 fn init_env() {
     std::env::set_var(
         "DATABASE_URL",
-        "postgres://postgres:postgres@localhost:5432/test_db",
+        "postgres://postgres:postgres@localhost:5432/app_db",
     );
     std::env::set_var("RUST_LOG", "debug");
     std::env::set_var("RUST_BACKTRACE", "1");
