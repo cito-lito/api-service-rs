@@ -6,7 +6,7 @@ MIGRATION_PATH := ./migrations
 .PHONY: init setup up wait_for_db clippy fmt check run add_migration db_create migrate revert test_db_create test_migrate test
 
 # Set up local dev environment
-init: setup up wait_for_db migrate test_migrate
+init: setup up 
 
 # Check code formatting and linting
 check: fmt clippy
@@ -21,15 +21,6 @@ setup:
 up:
 	@echo "Starting Docker services..."
 	docker-compose up -d
-
-# Wait for the database to be ready
-wait_for_db:
-	@echo "Waiting for the database to be ready..."
-	@until sqlx database create --database-url $(DB_URL); do \
-    	sleep 1; \
-    	echo "Retrying..."; \
-	done
-	@echo "Database is ready."
 
 # Lint the code
 clippy:

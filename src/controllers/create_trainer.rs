@@ -8,12 +8,13 @@ use crate::server::AppState;
 #[post("/trainer")]
 pub async fn create_trainer(
     app_state: web::Data<AppState>,
-    trainer: web::Json<TrainerDto>,
+    trainer_dto: web::Json<TrainerDto>,
 ) -> impl Responder {
-    let trainer_dto = trainer.into_inner();
+    let trainer_dto = trainer_dto.into_inner();
 
-    if let Err(e) = trainer_dto.validate() {
-        return HttpResponse::BadRequest().body(format!("message: Bad Request: {}", e));
+    if let Err(validation_error) = trainer_dto.validate() {
+        return HttpResponse::BadRequest()
+            .json(format!("Validation error: {:?}", validation_error));
     }
 
     // postgres smallint is i16, safe cast u8 to i16
@@ -21,22 +22,9 @@ pub async fn create_trainer(
 
     let query_result = save_trainer(&app_state.db, &trainer).await;
 
-    // for name unique constraint: reactive approach:
-    // try to save trainer, if error is unique constraint violation, return bad request
-    // another approach would be to check if trainer name exists before saving
     match query_result {
         Ok(trainer) => HttpResponse::Created().json(trainer),
-        Err(e) => {
-            if let Some(db_error) = e.as_database_error() {
-                if let Some(constraint) = db_error.constraint() {
-                    if constraint == "trainers_name_key" {
-                        return HttpResponse::BadRequest()
-                            .body("message: Trainer name already exists");
-                    }
-                }
-            }
-            HttpResponse::InternalServerError().body("message: Internal Server Error")
-        }
+        Err(e) => handle_database_error(e),
     }
 }
 
@@ -53,4 +41,18 @@ async fn save_trainer(pool: &PgPool, trainer: &Trainer) -> Result<Trainer, sqlx:
         Ok(trainer) => Ok(trainer),
         Err(e) => Err(e),
     }
+}
+
+// for name unique constraint: reactive approach:
+// try to save trainer, if error is unique constraint violation, return bad request
+// another approach would be to check if trainer name exists before saving
+fn handle_database_error(e: sqlx::Error) -> HttpResponse {
+    if let Some(db_error) = e.as_database_error() {
+        if let Some(constraint) = db_error.constraint() {
+            if constraint == "trainers_name_key" {
+                return HttpResponse::BadRequest().json("message: Trainer name already exists");
+            }
+        }
+    }
+    HttpResponse::InternalServerError().json("message: Internal Server Error")
 }

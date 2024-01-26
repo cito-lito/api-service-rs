@@ -15,6 +15,7 @@ async fn main() -> std::io::Result<()> {
     server.run().await
 }
 
+// for now till proper config
 fn init_env() {
     std::env::set_var(
         "DATABASE_URL",
