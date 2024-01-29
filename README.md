@@ -54,6 +54,7 @@ migration folder can be removed and  it will be generated using the `Makefile` o
 ## todo
 
 - better env variables management
+- github actions for CI/CD
 - add authentication
 - add pagination
 - maybe add redis
