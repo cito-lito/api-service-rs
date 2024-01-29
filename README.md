@@ -35,7 +35,6 @@ migration folder can be removed and  it will be generated using the `Makefile` o
 
 - rust installed locally, [rustup](https://rustup.rs/). Later we can use docker to build the project.
 - docker and docker-compose, [docker](https://docs.docker.com/get-docker/)
-- for database management, [pgAdmin](https://www.pgadmin.org/download/)
 
 ## getting started
 
