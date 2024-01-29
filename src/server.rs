@@ -33,9 +33,9 @@ impl Server {
 
         HttpServer::new(move || {
             App::new()
+                .wrap(Compress::default())
                 .wrap(Logger::default())
                 .wrap(Cors::default())
-                .wrap(Compress::default())
                 .app_data(web::Data::new(AppState { db: pool.clone() }))
                 .configure(config_routes)
         })
