@@ -28,7 +28,7 @@ async fn test_create_trainer() {
     let mock_trainer_dto = create_json_trainer("Ash", 1);
 
     let resp = test::TestRequest::post()
-        .uri("/trainer")
+        .uri("/trainers")
         .set_json(&mock_trainer_dto)
         .send_request(&app)
         .await;
@@ -56,13 +56,13 @@ async fn test_create_trainer_with_repeated_name() {
     let mock_trainer_dto = create_json_trainer("Ash", 1);
 
     let _ = test::TestRequest::post()
-        .uri("/trainer")
+        .uri("/trainers")
         .set_json(&mock_trainer_dto)
         .send_request(&app)
         .await;
 
     let resp = test::TestRequest::post()
-        .uri("/trainer")
+        .uri("/trainers")
         .set_json(&mock_trainer_dto)
         .send_request(&app)
         .await;
@@ -85,7 +85,7 @@ async fn test_create_trainer_invalid_dto() {
     let mock_trainer_dto = create_json_trainer("ABC", 51);
 
     let resp = test::TestRequest::post()
-        .uri("/trainer")
+        .uri("/trainers")
         .set_json(&mock_trainer_dto)
         .send_request(&app)
         .await;

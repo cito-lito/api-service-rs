@@ -5,7 +5,7 @@ use validator::Validate;
 use crate::models::trainer::{Trainer, TrainerDto};
 use crate::server::AppState;
 
-#[post("/trainer")]
+#[post("/trainers")]
 pub async fn create_trainer(
     app_state: web::Data<AppState>,
     trainer_dto: web::Json<TrainerDto>,

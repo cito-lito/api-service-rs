@@ -3,10 +3,11 @@ TEST_DB_URL := postgres://postgres:postgres@localhost:5432/test_db
 DB_URL:= postgres://postgres:postgres@localhost:5432/app_db
 MIGRATION_PATH := ./migrations
 
-.PHONY: init setup up wait_for_db clippy fmt check run add_migration db_create migrate revert test_db_create test_migrate test
+.PHONY: init setup up clippy fmt check run add_migration db_create migrate revert test_db_create test_migrate test
 
 # Set up local dev environment
-init: setup up 
+init: setup up db_create migrate test_db_create test_migrate
+	@echo "Local development environment is ready."
 
 # Check code formatting and linting
 check: fmt clippy
